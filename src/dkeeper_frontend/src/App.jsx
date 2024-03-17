@@ -1,31 +1,34 @@
-import { useState } from 'react';
-import { dkeeper_backend } from 'declarations/dkeeper_backend';
+import React from "react";
+import Header from "./Components/Header";
+import Footer from "./Components/Footer";
+import Note from "./Components/Note";
+import CreateArea from "./Components/CreateArea";
+import {dkeeper_backend} from "../../declarations/dkeeper_backend";
 
 function App() {
-  const [greeting, setGreeting] = useState('');
+	const [list,setList] = React.useState([]);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    dkeeper_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+	function updateList(note){
+		dkeeper_backend.createNote(note.title,note.content);
+   		setList([...list,note]);
+	}
 
-  return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
-  );
+	function deleteNote(id){
+		setList((list.filter((note,index)=>{
+			return id !== index;
+		})));
+	}
+
+  	return (
+    	<div>
+      		<Header />
+      		<CreateArea addNote = {updateList} />
+			{list.map((note,index) => {
+				return <Note key = {index} id = {index} title = {note.title} content = {note.content} del = {deleteNote}/>;
+			})}
+      		<Footer />
+    	</div>
+  	);
 }
 
 export default App;
